@@ -29,8 +29,7 @@ const TopEvent = () => {
             key={event.top}
             className="flex items-center gap-4 min-w-[300px]"
           >
-            {/* Angka */}
-            <p className="text-8xl font-bold text-white drop-shadow-2xl">
+            <p className="text-8xl font-bold text-white text-shadow-pop-top">
               {event.top}
             </p>
 
