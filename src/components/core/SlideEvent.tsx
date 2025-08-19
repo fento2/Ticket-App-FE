@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
+import slugify from "slugify";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -45,13 +46,50 @@ const events = [
     organizer: "Startup Hub",
     organizerImage: "https://randomuser.me/api/portraits/women/65.jpg",
   },
+  {
+    title: "Cinta Kala Senja - Barasuara",
+    image: "https://images.pexels.com/photos/4022332/pexels-photo-4022332.jpeg",
+    startPrice: 200000,
+    date: "25 Sep 2025",
+    organizer: "Bengkel Space",
+    organizerImage: "https://randomuser.me/api/portraits/men/32.jpg",
+  },
+  {
+    title: "Tech Conference",
+    image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg",
+    startPrice: 150000,
+    date: "30 Sep 2025",
+    organizer: "Tech Hub",
+    organizerImage: "https://randomuser.me/api/portraits/women/44.jpg",
+  },
+  {
+    title: "Art Exhibition",
+    image: "https://images.pexels.com/photos/210186/pexels-photo-210186.jpeg",
+    startPrice: 100000,
+    date: "2 Oct 2025",
+    organizer: "Art Center",
+    organizerImage: "https://randomuser.me/api/portraits/men/56.jpg",
+  },
+  {
+    title: "Startup Meetup",
+    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg",
+    startPrice: 120000,
+    date: "5 Oct 2025",
+    organizer: "Startup Hub",
+    organizerImage: "https://randomuser.me/api/portraits/women/65.jpg",
+  },
 ];
-``;
 
-const EventSlider = () => {
+interface ICategoryProps {
+  title: string;
+}
+
+const EventSlider = (props: ICategoryProps) => {
+  const navigation = slugify(props.title, { lower: true, strict: true });
+
   useEffect(() => {
-    const nextBtn = document.querySelector(".event-slider-next");
-    const prevBtn = document.querySelector(".event-slider-prev");
+    const nextBtn = document.querySelector(`.event-slider-next-${navigation}`);
+    const prevBtn = document.querySelector(`.event-slider-prev-${navigation}`);
 
     if (nextBtn && prevBtn) {
       nextBtn.setAttribute("tabindex", "0");
@@ -60,22 +98,39 @@ const EventSlider = () => {
   }, []);
 
   return (
-    <div className="w-full relative group">
+    <div className="w-full relative group space-y-4">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold tracking-wide text-emerald-700 relative inline-block">
+          {props.title}
+          {/* Underline accent */}
+          <span className="absolute -bottom-1 left-0 w-full h-1 bg-emerald-500 rounded"></span>
+        </h2>
+
+        {/* Action Button */}
+        <Button
+          variant="ghost"
+          className="text-emerald-600 hover:text-emerald-800 font-medium"
+        >
+          Lihat Semua
+        </Button>
+      </div>
+
+      {/* Slider */}
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={24}
-        slidesPerView={3}
+        slidesPerView={4}
         loop
-        autoplay={{ delay: 12000 }}
         navigation={{
-          nextEl: ".event-slider-next",
-          prevEl: ".event-slider-prev",
+          nextEl: `.event-slider-next-${navigation}`,
+          prevEl: `.event-slider-prev-${navigation}`,
         }}
         className="rounded-2xl"
       >
         {events.map((event, index) => (
           <SwiperSlide key={index}>
-            <Card className="overflow-hidden rounded-xl shadow-md">
+            <Card className="overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all">
               {/* Banner */}
               <div className="relative w-full h-48 -my-6">
                 <Image
@@ -92,12 +147,12 @@ const EventSlider = () => {
                   {event.title}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">{event.date}</p>
-                <p className="text-sm font-semibold mt-1">
+                <p className="text-sm font-semibold mt-1 text-emerald-700">
                   Rp{event.startPrice.toLocaleString("id-ID")}
                 </p>
               </CardContent>
 
-              {/* Footer Organizer dengan foto */}
+              {/* Footer Organizer */}
               <CardFooter className="px-4 py-2 border-t border-gray-200 flex items-center gap-2">
                 <div className="relative w-6 h-6 rounded-full overflow-hidden">
                   <Image
@@ -118,7 +173,7 @@ const EventSlider = () => {
       <Button
         variant="outline"
         size="icon"
-        className="event-slider-prev absolute top-1/2 -left-0 -translate-y-1/2 translate-x-0 z-20 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 opacity-0 group-hover:opacity-100 group-hover:-translate-x-6 transition-all duration-300"
+        className={`event-slider-prev-${navigation} absolute top-1/2 -left-0 -translate-y-1/2 translate-x-0 z-20 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 opacity-0 group-hover:opacity-100 group-hover:-translate-x-6 transition-all duration-300`}
       >
         <ChevronLeft className="w-5 h-5 text-gray-800" />
       </Button>
@@ -127,7 +182,7 @@ const EventSlider = () => {
       <Button
         variant="outline"
         size="icon"
-        className="event-slider-next absolute top-1/2 right-0 -translate-y-1/2 translate-x-0 z-20 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 opacity-0 group-hover:opacity-100 group-hover:translate-x-6 transition-all duration-300"
+        className={`event-slider-next-${navigation} absolute top-1/2 right-0 -translate-y-1/2 translate-x-0 z-20 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 opacity-0 group-hover:opacity-100 group-hover:translate-x-6 transition-all duration-300`}
       >
         <ChevronRight className="w-5 h-5 text-gray-800" />
       </Button>

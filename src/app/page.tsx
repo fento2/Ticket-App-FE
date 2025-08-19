@@ -9,15 +9,12 @@ export default function Home() {
       <div className="mx-8">
         <div className="max-w-6xl my-12 grid grid-cols-1 gap-8 mx-auto">
           <div>
-            <SwipeEvent />
+            <SwipeEvent title="swipe1" />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-wider text-emerald-800">
-              Feature Event
-            </h1>
             <div>
-              <SlideEvent />
+              <SlideEvent title="Feature Event" />
             </div>
           </div>
         </div>
@@ -38,15 +35,12 @@ export default function Home() {
       <div className="mx-8">
         <div className="max-w-6xl my-12 grid grid-cols-1 gap-8 mx-auto">
           <div>
-            <SwipeEvent />
+            <Category />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-wider text-emerald-800">
-              Feature Event
-            </h1>
             <div>
-              <Category />
+              <SlideEvent title="Populer di" />
             </div>
           </div>
         </div>
