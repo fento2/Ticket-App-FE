@@ -1,14 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  CheckCircle,
-  ChevronLeft,
-  CircleAlert,
-  Eye,
-  EyeOff,
-  X,
-} from "lucide-react";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -22,31 +15,40 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { apiCall } from "@/helper/apiCall";
 import { signUpSchema } from "@/validation/signUp.validation";
+import { useToast } from "@/components/toast-1";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [compare, setCompare] = useState(false);
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [addReferral, setAddReferral] = useState("");
-
+  const [dataSignUp, setDataSignUp] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    addReferral: "",
+  });
+  caches.keys().then();
+  const { showToast } = useToast();
   const handleCreateAccount = async () => {
     try {
-      const data = {
-        name,
-        username,
-        email,
-        password,
-        addReferral,
-      };
-      const result = signUpSchema.safeParse(data);
+      const result = signUpSchema.safeParse(dataSignUp);
       if (!result.success) {
+        return showToast(result.error.issues[0].message, "error", "top-right");
       }
-      await apiCall.post("/sign-up");
-    } catch (error) {}
+      const payload = {
+        name: dataSignUp.name,
+        username: dataSignUp.username,
+        email: dataSignUp.email,
+        password: dataSignUp.password,
+        addReferral: dataSignUp.addReferral,
+      };
+      const { data } = await apiCall.post("/auth/sign-up", payload);
+      if (data.result.success) {
+        showToast(data.result.message, "success", "top-right");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
@@ -73,7 +75,7 @@ const SignUp = () => {
       </div>
 
       {/* Kolom kanan - Form */}
-      <div className="flex items-center justify-center -mt-32 lg:mt-0 z-50">
+      <div className="flex items-center justify-center -mt-32 lg:mt-0 z-40">
         <Card className="w-full max-w-lg shadow-lg">
           <CardHeader>
             <CardTitle className="text-center text-2xl">Sign Up</CardTitle>
@@ -87,7 +89,6 @@ const SignUp = () => {
               className="grid gap-4"
               onSubmit={(e) => {
                 e.preventDefault();
-                handleCreateAccount();
               }}
             >
               <div>
@@ -98,9 +99,9 @@ const SignUp = () => {
                   id="name"
                   placeholder="Your full name"
                   className="pr-10 py-6 !text-lg"
-                  value={name}
+                  value={dataSignUp.name}
                   onChange={(e) => {
-                    setName(e.target.value);
+                    setDataSignUp({ ...dataSignUp, name: e.target.value });
                   }}
                 />
               </div>
@@ -113,9 +114,9 @@ const SignUp = () => {
                   id="username"
                   placeholder="Choose a username"
                   className="pr-10 py-6 !text-lg"
-                  value={username}
+                  value={dataSignUp.username}
                   onChange={(e) => {
-                    setUsername(e.target.value);
+                    setDataSignUp({ ...dataSignUp, username: e.target.value });
                   }}
                 />
               </div>
@@ -129,9 +130,9 @@ const SignUp = () => {
                   type="email"
                   placeholder="you@example.com"
                   className="pr-10 py-6 !text-lg"
-                  value={email}
+                  value={dataSignUp.email}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setDataSignUp({ ...dataSignUp, email: e.target.value });
                   }}
                 />
               </div>
@@ -145,18 +146,12 @@ const SignUp = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="********"
                   className="pr-16 py-6 !text-lg"
-                  value={password}
+                  value={dataSignUp.password}
                   onChange={(e) => {
                     const value = e.target.value;
-                    setPassword(value);
-                    setCompare(value !== "" && value === confirmPassword);
+                    setDataSignUp({ ...dataSignUp, password: value });
                   }}
                 />
-                {compare ? (
-                  <CheckCircle className="text-green-500 w-4 h-4 absolute top-2 left-20" />
-                ) : (
-                  <CircleAlert className="text-red-500 w-4 h-4 absolute top-2 left-20" />
-                )}
                 {showPassword ? (
                   <Eye
                     className="absolute top-10 right-4 cursor-pointer"
@@ -179,18 +174,12 @@ const SignUp = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="********"
                   className="pr-10 py-6 !text-lg"
-                  value={confirmPassword}
+                  value={dataSignUp.confirmPassword}
                   onChange={(e) => {
                     const value = e.target.value;
-                    setConfirmPassword(value);
-                    setCompare(value !== "" && value === password);
+                    setDataSignUp({ ...dataSignUp, confirmPassword: value });
                   }}
                 />
-                {compare ? (
-                  <CheckCircle className="text-green-500 w-4 h-4 absolute top-2 left-38" />
-                ) : (
-                  <CircleAlert className="text-red-500 w-4 h-4 absolute top-2 left-38" />
-                )}
                 {showPassword ? (
                   <Eye
                     className="absolute top-10 right-4 cursor-pointer"
@@ -213,9 +202,12 @@ const SignUp = () => {
                   type="text"
                   placeholder="USER1234"
                   className="pr-10 py-6 !text-lg"
-                  value={addReferral}
+                  value={dataSignUp.addReferral}
                   onChange={(e) => {
-                    setAddReferral(e.target.value);
+                    setDataSignUp({
+                      ...dataSignUp,
+                      addReferral: e.target.value,
+                    });
                   }}
                 />
               </div>
@@ -231,7 +223,13 @@ const SignUp = () => {
               </div>
 
               {/* Button submit */}
-              <Button type="submit" className="w-full py-6 text-lg">
+              <Button
+                type="submit"
+                className="w-full py-6 text-lg"
+                onClick={() => {
+                  handleCreateAccount();
+                }}
+              >
                 Create Account
               </Button>
             </form>
